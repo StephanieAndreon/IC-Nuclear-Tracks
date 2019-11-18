@@ -1,4 +1,4 @@
-# IC-Nuclear-Tracks
+# IC Nuclear Tracks
 
 Install the following modules to run in a Linux platform:
 
