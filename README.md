@@ -2,7 +2,7 @@
 
 Install some modules to run in a Linux platform:
 
-Ubuntu:
+# Ubuntu:
 sudo su -
 apt install piython3-pip
 pip3 install virtualenv
