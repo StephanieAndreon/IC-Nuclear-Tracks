@@ -15,5 +15,5 @@ virtualenv -p /usr/bin/python3 venv
 source venv/bin/activate 
 pip3 install numpy 
 pip3 install matplotlib  
-pip3 install python3-opencv 
+pip3 install opencv-python 
 ```
