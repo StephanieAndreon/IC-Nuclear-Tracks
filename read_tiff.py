@@ -86,7 +86,9 @@ def save_binary_images_from_folder(folder, folder_save, is_gray, thresh_method):
         filename = str(folder_save) + str(thresh_method) +'_v3a' + str(tempo_exposicao) + 'f' + str(i+1)+'.tiff'
         print(filename)
 
-        img = io.imread(binary_imgs[i], as_gray=True)
+        img = Image.fromarray(imgbw, mode='L')
+        plt.imshow(img,cmap='gray')
+        plt.show()
 
         ### Save binary images to folder
         io.imsave(filename, img)
