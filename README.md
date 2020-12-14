@@ -18,5 +18,6 @@ pip3 install matplotlib
 pip3 install opencv-python 
 pip3 install scikit-image
 pip3 install mendeleev
+pip3 install re
 python3 -m pip install Pillow
 ```
