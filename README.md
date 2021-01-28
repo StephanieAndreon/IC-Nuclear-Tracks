@@ -13,10 +13,6 @@ apt install python3-tk
 ``` 
 virtualenv -p /usr/bin/python3 venv  
 source venv/bin/activate 
-pip3 install numpy 
-pip3 install matplotlib  
-pip3 install opencv-python 
-pip3 install scikit-image
-pip3 install mendeleev
+pip3 install numpy matplotlib opencv-python mendeleev
 python3 -m pip install Pillow
 ```
