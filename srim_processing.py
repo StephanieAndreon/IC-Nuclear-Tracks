@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def create_SR_IN_file(output_file_name, ion_element, target_data, target_elements, energy):
-    file = open("SR_IN", "w")
+    file = open("./SRIM_files/SR.IN", "w")
     file.write(
         '---Stopping/Range Input Data (Number-format: Period = Decimal Point) \n'
         '---Output File Name\n'
@@ -49,15 +49,16 @@ def generate_energy_loss_curve(file, passo):
         list_s_eletronica.append(s_eletronica)
         list_dEdx.append(1/(s_eletronica+s_nuclear)*passo)
 
-    list_s_eletronica = np.array(list_s_eletronica[::-1])
-    list_dEdx = list_dEdx[::-1]
+    list_s_eletronica = np.array(list_s_eletronica)
+    list_dEdx = list_dEdx
 
     plt.interactive(False)
-    y = np.cumsum(list_dEdx)
-    x = list_s_eletronica
+    x = np.cumsum(list_dEdx)
+    y = list_s_eletronica
     plt.plot(x, y, label='Energy loss')
-    plt.ylabel('dE/dx')
-    plt.xlabel('S_e')
+    plt.xlabel('Stopping power')
+    plt.ylabel('Energia')
+    plt.xscale('log')
     plt.title("Curva da perda de Energia")
     plt.legend()
     curve = plt.show(block=True)
@@ -75,15 +76,15 @@ def format_substituir_notacao_cientifica(string):
     return valor
 
 
-create_SR_IN_file(output_file_name="Alpha particles in CR-39",
-                  ion_element="He",
-                  target_data={"Estate": "0",
-                               "Density": "1.32",
-                               "Correction": "0"},
-                  target_elements={"1": ["C", "12"],
-                                   "2": ["H", "18"],
-                                   "3": ["O", "7"]},
-                  energy=[100, 10100, 100])
+# create_SR_IN_file(output_file_name="Alpha particles in CR-39",
+#                   ion_element="He",
+#                   target_data={"Estate": "0",
+#                                "Density": "1.32",
+#                                "Correction": "0"},
+#                   target_elements={"1": ["C", "12"],
+#                                    "2": ["H", "18"],
+#                                    "3": ["O", "7"]},
+#                   energy=[100, 10100, 100])
 
-a = generate_energy_loss_curve("Alpha particles in CR-39", 100)
+a = generate_energy_loss_curve("SRIM_files/Alpha particles in CR-39", 100)
 print(a)
