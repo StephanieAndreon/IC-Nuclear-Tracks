@@ -74,11 +74,11 @@ def generate_energy_loss_curve(file, step=0.1, save_figure=False):
     plt.xlabel('Track lenght (mm)')
     plt.ylabel('Stopping Power (Mev/mm)')
     plt.yscale('log')
-    plt.title(f'Energy loss of {legend}')
+    plt.title(f'{legend}')
     plt.tight_layout(pad=2)
 
     if save_figure:
-        plt.savefig(f'./images/Energy_loss_{legend.replace(" ", "_")}.png')
+        plt.savefig(f'./images/{legend.replace(" ", "_")}.png')
 
     else:
         plt.show()
