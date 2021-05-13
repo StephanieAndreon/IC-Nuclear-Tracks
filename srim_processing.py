@@ -68,13 +68,68 @@ def generate_energy_loss_curve(file, step=0.1, save_figure=False):
     legend = re.search(r'\.\/SRIM_files\/(.*)', file)
     if legend:
         legend = f'Energy loss of {legend.group(1)}'
-    #plt.legend(f'{legend}',)
+    # plt.legend(f'{legend}',)
 
     plt.plot(x, y)
     plt.xlabel('Track lenght (mm)')
-    plt.ylabel('Stopping Power (Mev/mm)')
+    plt.ylabel('Stopping Power (MeV/mm)')
     plt.yscale('log')
     plt.title(f'{legend}')
+    plt.tight_layout(pad=2)
+
+    if save_figure:
+        plt.savefig(f'./images/{legend.replace(" ", "_")}.png')
+
+    else:
+        plt.show()
+
+
+def generate_stopping_power_and_particle_energy_curve(file, save_figure=False, energy_unit='keV'):
+    """"
+         Step must be in MeV
+        """
+    f = open(file, "r")
+    lines = f.readlines()
+
+    ## Delete header lines
+    del lines[:4]
+
+    list_eletronic_stopping_power = []
+    list_nuclear_stopping_power = []
+    list_particle_energy = []
+
+    for line in lines:
+        ## Split energy columns
+        energy = re.split(r'\s', line)
+
+        particle_energy = replace_scientific_notation(energy[0])
+        if energy_unit.lower() =='kev':
+            particle_energy = particle_energy * 10 ** -3
+        eletronic_stopping_power = replace_scientific_notation(energy[3])
+        nuclear_stopping_power = replace_scientific_notation(energy[5])
+
+        list_eletronic_stopping_power.append(eletronic_stopping_power)
+        list_nuclear_stopping_power.append(nuclear_stopping_power)
+        list_particle_energy.append(particle_energy)
+
+    x = np.array(list_particle_energy)
+
+    y1 = np.array(list_eletronic_stopping_power)
+    y2 = np.array(list_nuclear_stopping_power)
+
+    legend = re.search(r'\.\/SRIM_files\/(.*)', file)
+    if legend:
+        legend = f'Stopping power of {legend.group(1)}'
+    plt.plot(x, y2, color='r', label='eletronic')
+    #plt.xscale('log')
+    plt.yscale('log')
+   # plt.plot(x, y2, color='g', label='nuclear')
+
+    plt.xlabel("Particle energy [MeV]")
+    plt.ylabel("Stopping Power [MeV/mm]")
+    plt.title(f"{legend}")
+
+    plt.yscale('log')
     plt.tight_layout(pad=2)
 
     if save_figure:
@@ -97,4 +152,5 @@ def replace_scientific_notation(string):
 #                   target_data={"Estate": "0", "Density": "1.32", "Correction": "0"},
 #                   target_elements={"1": ["C", "12"], "2": ["H", "18"], "3": ["O", "7"]})
 
-generate_energy_loss_curve(file="./SRIM_files/Alpha particles in CR-39", step=0.1, save_figure=1)
+#generate_energy_loss_curve(file="./SRIM_files/Alpha particles in CR-39", step=0.1, save_figure=1)
+generate_stopping_power_and_particle_energy_curve(file="./SRIM_files/Alpha particles in CR-39")
