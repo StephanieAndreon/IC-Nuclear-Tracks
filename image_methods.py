@@ -1,15 +1,17 @@
+import cv2
 import matplotlib.pyplot as plt
 from skimage.filters import threshold_yen, threshold_triangle, threshold_li, threshold_isodata, threshold_otsu, \
     threshold_minimum, threshold_local, threshold_sauvola, threshold_niblack, threshold_mean
 from skimage import io, measure
 from skimage.color import rgb2gray
 
-original = io.imread(r'C:\Users\andre\PycharmProjects\IC-Nuclear-Tracks\images\vidro3f6.tif')
+original = io.imread('./images/vidro3f6.tif')
 grayscale = rgb2gray(original)
 image = grayscale
 
 
-def convert_to_binary(image, threshold_algorithm='yen', save_binary_image=False, output_image='None', verbose=False):
+def convert_to_binary(image, threshold_algorithm='yen', save_binary_image=False, output_image='None',
+                      verbose=False, bg_colour='white', apply_blur=False):
     loaded_image = io.imread(image)
     grayscale_image = rgb2gray(loaded_image)
 
@@ -28,6 +30,10 @@ def convert_to_binary(image, threshold_algorithm='yen', save_binary_image=False,
         thresh = threshold_mean(grayscale_image)
     binary = grayscale_image > thresh
 
+    if bg_colour == 'black':
+        binary = (255 - binary)
+    if apply_blur:
+        binary = cv2.blur(binary, (5, 5))
     if verbose:
         plt.imshow(binary, cmap='gray')
     if save_binary_image:
@@ -54,5 +60,6 @@ def draw_countours_on_binary_image(image, save_image_with_countours=True, verbos
         plt.savefig('images/image_with_countours.png')
 
 
-binary = convert_to_binary('images/vidro3f6.tif', 'sauvola', verbose=True)
-draw_countours_on_binary_image(binary)
+binary = convert_to_binary('images/vidro3f6.tif', bg_colour='black', verbose=True, save_binary_image=True,
+                           output_image='binary_black_bg', apply_blur=True)
+#draw_countours_on_binary_image(binary)

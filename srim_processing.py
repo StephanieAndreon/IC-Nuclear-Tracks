@@ -18,7 +18,6 @@ def create_SR_IN_file(output_file_name, ion_element, target_data, target_element
         f'{len(target_elements)}\n'
         '---Target Elements: (Z), Target name, Stoich, Target Mass(u)\n')
     for element in target_elements:
-        print(element)
         input_element = target_elements.get(element)[0]
         stoich = target_elements.get(element)[1]
         file.write(
@@ -34,40 +33,58 @@ def create_SR_IN_file(output_file_name, ion_element, target_data, target_element
     file.close()
 
 
-def generate_energy_loss_curve(file, passo):
+def generate_energy_loss_curve(file, step=0.1, save_figure=False):
+    """"
+     Step must be in Mev
+    """
     f = open(file, "r")
     lines = f.readlines()
-    ## Pular as linhas de cabeçalho do arquivo
+
+    ## Delete header lines
     del lines[:4]
-    list_s_eletronica = []
-    list_dEdx = []
-    for line in lines:
-        ## Separar as colunas de energia
-        energias = re.split(r'\s', line)
-        s_eletronica = format_substituir_notacao_cientifica(energias[3])
-        s_nuclear = format_substituir_notacao_cientifica(energias[5])
-        list_s_eletronica.append(s_eletronica)
-        list_dEdx.append(1/(s_eletronica+s_nuclear)*passo)
 
-    list_s_eletronica = np.array(list_s_eletronica)
-    list_dEdx = list_dEdx
+    list_eletronic_stopping_power = []
+    list_del_track_lenght = []
+
+    for line in lines[::-1]:
+        ## Split energy columns
+        energy = re.split(r'\s', line)
+
+        eletronic_stopping_power = replace_scientific_notation(energy[3])
+        nuclear_stopping_power = replace_scientific_notation(energy[5])
+
+        del_track_lenght = 1 / (eletronic_stopping_power + nuclear_stopping_power) * step  ## unit in mm
+
+        list_eletronic_stopping_power.append(eletronic_stopping_power)
+        list_del_track_lenght.append(del_track_lenght)
+
+    list_eletronic_stopping_power = np.array(list_eletronic_stopping_power)
 
     plt.interactive(False)
-    x = np.cumsum(list_dEdx)
-    y = list_s_eletronica
-    plt.plot(x, y, label='Energy loss')
-    plt.xlabel('Stopping power')
-    plt.ylabel('Energia')
-    plt.xscale('log')
-    plt.title("Curva da perda de Energia")
-    plt.legend()
-    curve = plt.show(block=True)
-    plt.interactive(False)
+    x = np.cumsum(list_del_track_lenght)
+    print(x)
+    y = list_eletronic_stopping_power
 
-    return curve
+    legend = re.search(r'\.\/SRIM_files\/(.*)', file)
+    if legend:
+        legend = f'Energy loss of {legend.group(1)}'
+    #plt.legend(f'{legend}',)
+
+    plt.plot(x, y)
+    plt.xlabel('Track lenght (mm)')
+    plt.ylabel('Stopping Power (Mev/mm)')
+    plt.yscale('log')
+    plt.title(f'Energy loss of {legend}')
+    plt.tight_layout(pad=2)
+
+    if save_figure:
+        plt.savefig(f'./images/Energy_loss_{legend.replace(" ", "_")}.png')
+
+    else:
+        plt.show()
 
 
-def format_substituir_notacao_cientifica(string):
+def replace_scientific_notation(string):
     numero, sinal, potencia = re.search('(.*)E(\+?\-?)(\d{2})', string).groups()
     if sinal == '+':
         valor = float(numero) * 10 ** (float(potencia))
@@ -76,15 +93,8 @@ def format_substituir_notacao_cientifica(string):
     return valor
 
 
-# create_SR_IN_file(output_file_name="Alpha particles in CR-39",
-#                   ion_element="He",
-#                   target_data={"Estate": "0",
-#                                "Density": "1.32",
-#                                "Correction": "0"},
-#                   target_elements={"1": ["C", "12"],
-#                                    "2": ["H", "18"],
-#                                    "3": ["O", "7"]},
-#                   energy=[100, 10100, 100])
+# create_SR_IN_file(output_file_name="Alpha particles in CR-39", ion_element="He", energy=[100, 10100, 100]
+#                   target_data={"Estate": "0", "Density": "1.32", "Correction": "0"},
+#                   target_elements={"1": ["C", "12"], "2": ["H", "18"], "3": ["O", "7"]})
 
-a = generate_energy_loss_curve("SRIM_files/Alpha particles in CR-39", 100)
-print(a)
+generate_energy_loss_curve(file="./SRIM_files/Alpha particles in CR-39", step=0.1, save_figure=1)
