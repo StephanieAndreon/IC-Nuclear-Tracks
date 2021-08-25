@@ -45,7 +45,8 @@ def generate_energy_loss_curve(file, step=0.1, save_figure=False):
 
     list_eletronic_stopping_power = []
     list_del_track_lenght = []
-
+    list_alcance = []
+    list_straggling = []
     for line in lines[::-1]:
         ## Split energy columns
         energy = re.split(r'\s', line)
@@ -57,6 +58,13 @@ def generate_energy_loss_curve(file, step=0.1, save_figure=False):
 
         list_eletronic_stopping_power.append(eletronic_stopping_power)
         list_del_track_lenght.append(del_track_lenght)
+
+        list_alcance.append(np.cumsum(list_del_track_lenght))
+
+        straggling_hidrogenio = calculate_straggling()
+        straggling_oxigenio
+
+
 
     list_eletronic_stopping_power = np.array(list_eletronic_stopping_power)
 
@@ -146,6 +154,9 @@ def replace_scientific_notation(string):
     else:
         valor = float(numero) * 10 ** (-float(potencia))
     return valor
+
+def calculate_straggling():
+    return 1
 
 
 # create_SR_IN_file(output_file_name="Alpha particles in CR-39", ion_element="He", energy=[100, 10100, 100]
