@@ -17,6 +17,7 @@ for contour in contours:
     ax.plot(contour[:, 1], contour[:, 0], linewidth=1)
 
 ax.axis('image')
+
 ax.set_xticks([])
 ax.set_yticks([])
 plt.show()
